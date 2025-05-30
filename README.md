@@ -1,22 +1,19 @@
 # Practice Project Collection
 
-Welcome to my **Practice Project Collection** — a curated set of small projects, coding exercises, and experiments designed to improve my programming skills and explore new technologies.
+A collection of small projects, coding exercises, and experiments designed to improve my programming skills and explore new technologies.
 
 ## Purpose
 
 This repository serves as:
 - A record of my learning journey.
+- A reference archive for reusable scripts, patterns, and examples.
 - A sandbox for testing concepts and tools.
-- A showcase of my development progress over time.
-
-## 🗂️ Structure
-
-Each entry links to a standalone GitHub repository with its own source code, documentation, and notes.
 
 ---
 
 
 ## 📂 Project Directory
+
 
 ---
 
