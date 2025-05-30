@@ -11,13 +11,7 @@ This repository serves as:
 
 ---
 
-
-## 📂 Project Directory
-
-
----
-
-## 🛠️ Technologies Explored
+## Technologies Explored
 
 - **Languages:** C#, Python, SQL,
 - **Databases:** SQL Server, InfluxDB, SQLite
@@ -26,14 +20,14 @@ This repository serves as:
 
 ---
 
-## 🔖 Notes
+## Notes
 
-- This repository contains no source code — only links and previews.
-- All project source code is maintained in their individual repositories (some may be private).
-- Preview images are embedded using raw GitHub links from the respective repos.
+- Some projects may depend on NuGet packages, which may carry their own license agreements—please review them accordingly.
+- Source code for certain projects is maintained either within this repository or in separate repositories (some of which may be private).
+- Preview images are embedded using raw GitHub links from the respective project folders or repos.
 
 ---
 
-## 📌 Related
+## Related
 
 - [Project Portfolio](https://github.com/emman-j/project-portfolio) – A collection of software projects in active development.
