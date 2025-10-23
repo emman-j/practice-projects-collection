@@ -46,24 +46,9 @@ namespace ProcessHandler
             }
         }
 
-        private void Line(string message)
-        {
-            logtext += message + Environment.NewLine;
-
-            if (textBox1.InvokeRequired)
-            {
-                textBox1.Invoke(new Action(() => textBox1.AppendText(message + Environment.NewLine)));
-            }
-            else
-            {
-                textBox1.AppendText(message + Environment.NewLine);
-            }
-        }
-
         private async void button2_Click(object sender, EventArgs e)
         {
             string response = Query(textBox2.Text);
-            //WriteLine("[APP RESPONSE] " + response);
             if (response.Contains("Path"))
                 MessageBox.Show("Expected response received: " + response);
         }
@@ -74,7 +59,6 @@ namespace ProcessHandler
             ProcessHandler.SendCommand(textBox2.Text);
             Thread.Sleep(150); // Wait for response
             return ProcessHandler.LastOutput;
-            //return ProcessHandler.ReadOutput();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
