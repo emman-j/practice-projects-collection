@@ -24,14 +24,32 @@ namespace test_app_tutorial
 
         private void ShowCurrentStep()
         {
-            if (index >= steps.Count)
+            if (index < 0 || index >= steps.Count)
                 return;
 
             var step = steps[index];
-            index++;
 
-            new TutorialOverlay(step.control, step.message, ShowCurrentStep).Show();
+            // Create overlay with both Next and Previous actions
+            new TutorialOverlay(
+                step.control,
+                step.message,
+                OnNext,
+                OnPrevious
+            ).Show();
+        }
+
+        private void OnNext()
+        {
+            index++;
+            if (index < steps.Count)
+                ShowCurrentStep();
+        }
+
+        private void OnPrevious()
+        {
+            index--;
+            if (index >= 0)
+                ShowCurrentStep();
         }
     }
-
 }

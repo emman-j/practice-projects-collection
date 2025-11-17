@@ -12,12 +12,17 @@ namespace test_app_tutorial
         private readonly Control target;
         private readonly string message;
         private readonly Action nextStep;
+        private readonly Action prevStep;
 
-        public TutorialOverlay(Control targetControl, string tutorialMessage, Action onNext)
+        private readonly Button btnNext;
+        private readonly Button btnPrev;
+
+        public TutorialOverlay(Control targetControl, string tutorialMessage, Action onNext, Action onPrevious)
         {
             target = targetControl;
             message = tutorialMessage;
             nextStep = onNext;
+            prevStep = onPrevious;
 
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
@@ -29,14 +34,45 @@ namespace test_app_tutorial
             BackColor = Color.Black;
             Opacity = 0.65;
 
-            Click += (s, e) => Proceed();
+            Click += (s, e) => ProceedNext();
             Shown += (s, e) => CreateMask();
+
+            // NEXT BUTTON
+            btnNext = new Button
+            {
+                Text = "Next ▶",
+                AutoSize = true,
+                BackColor = Color.White,
+                ForeColor = Color.Black,
+                FlatStyle = FlatStyle.Flat,
+            };
+            btnNext.Click += (s, e) => ProceedNext();
+
+            // PREVIOUS BUTTON
+            btnPrev = new Button
+            {
+                Text = "◀ Previous",
+                AutoSize = true,
+                BackColor = Color.White,
+                ForeColor = Color.Black,
+                FlatStyle = FlatStyle.Flat,
+            };
+            btnPrev.Click += (s, e) => ProceedPrev();
+
+            Controls.Add(btnNext);
+            Controls.Add(btnPrev);
         }
 
-        private void Proceed()
+        private void ProceedNext()
         {
             Close();
             nextStep?.Invoke();
+        }
+
+        private void ProceedPrev()
+        {
+            Close();
+            prevStep?.Invoke();
         }
 
         private void CreateMask()
@@ -44,15 +80,26 @@ namespace test_app_tutorial
             var screenRect = Screen.FromControl(target).Bounds;
             var targetRect = target.RectangleToScreen(target.ClientRectangle);
 
-            // Full-screen region
             Region region = new Region(new Rectangle(0, 0, Width, Height));
-
-            // Remove the target area from it
             region.Exclude(targetRect);
-
             this.Region = region;
 
+            PositionButtons(targetRect);
             Invalidate();
+        }
+
+        private void PositionButtons(Rectangle targetRect)
+        {
+            int centerX = (targetRect.Left + targetRect.Right) / 2;
+
+            // Space below target
+            int y = targetRect.Bottom + 40;
+
+            btnPrev.Location = new Point(centerX - btnPrev.Width - 10, y);
+            btnNext.Location = new Point(centerX + 10, y);
+
+            btnPrev.BringToFront();
+            btnNext.BringToFront();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -68,8 +115,7 @@ namespace test_app_tutorial
                     message,
                     font,
                     brush,
-                    targetRect.Left,
-                    targetRect.Bottom + 8
+                    new PointF(targetRect.Left, targetRect.Bottom + 8)
                 );
             }
         }
