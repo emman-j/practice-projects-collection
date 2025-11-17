@@ -9,44 +9,43 @@ namespace test_app_tutorial
 {
     public class TutorialOverlay : Form
     {
-        private Control target;
-        private string message;
+        private readonly Control target;
+        private readonly string message;
+        private readonly Action onStepComplete;
 
-        public TutorialOverlay(Control targetControl, string tutorialText)
+        public TutorialOverlay(Control targetControl, string tutorialText, Action nextStep)
         {
-            this.target = targetControl;
-            this.message = tutorialText;
+            target = targetControl;
+            message = tutorialText;
+            onStepComplete = nextStep;
 
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
             BackColor = Color.Black;
-            Opacity = 0.6;
+            Opacity = 0.65;
             TopMost = true;
             Bounds = Screen.PrimaryScreen.Bounds;
 
-            Click += (s, e) => Close(); // Click to continue
+            Click += (s, e) => CloseAndNext();
+        }
+
+        void CloseAndNext()
+        {
+            Close();
+            onStepComplete?.Invoke();
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            // Highlight rectangle
             Rectangle r = target.RectangleToScreen(target.ClientRectangle);
 
-            using var brush = new SolidBrush(Color.FromArgb(220, Color.Black));
+            using var brush = new SolidBrush(Color.FromArgb(180, Color.Black));
             e.Graphics.FillRectangle(brush, this.ClientRectangle);
 
-            using var gp = new GraphicsPath();
-            gp.AddRectangle(r);
+            e.Graphics.FillRectangle(Brushes.Transparent, r);
 
-            using var region = new Region(this.ClientRectangle);
-            region.Exclude(r);
-
-            e.Graphics.SetClip(region, CombineMode.Replace);
-
-            // Draw message
-            e.Graphics.ResetClip();
             e.Graphics.DrawString(
                 message,
                 new Font("Segoe UI", 14),
@@ -55,4 +54,5 @@ namespace test_app_tutorial
             );
         }
     }
+
 }
