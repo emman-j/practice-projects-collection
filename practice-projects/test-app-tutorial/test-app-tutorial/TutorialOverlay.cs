@@ -11,48 +11,67 @@ namespace test_app_tutorial
     {
         private readonly Control target;
         private readonly string message;
-        private readonly Action onStepComplete;
+        private readonly Action nextStep;
 
-        public TutorialOverlay(Control targetControl, string tutorialText, Action nextStep)
+        public TutorialOverlay(Control targetControl, string tutorialMessage, Action onNext)
         {
             target = targetControl;
-            message = tutorialText;
-            onStepComplete = nextStep;
+            message = tutorialMessage;
+            nextStep = onNext;
 
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
+            TopMost = true;
+            DoubleBuffered = true;
+
+            StartPosition = FormStartPosition.Manual;
+            Bounds = Screen.FromControl(target).Bounds;
             BackColor = Color.Black;
             Opacity = 0.65;
-            TopMost = true;
-            Bounds = Screen.PrimaryScreen.Bounds;
 
-            Click += (s, e) => CloseAndNext();
+            Click += (s, e) => Proceed();
+            Shown += (s, e) => CreateMask();
         }
 
-        void CloseAndNext()
+        private void Proceed()
         {
             Close();
-            onStepComplete?.Invoke();
+            nextStep?.Invoke();
+        }
+
+        private void CreateMask()
+        {
+            var screenRect = Screen.FromControl(target).Bounds;
+            var targetRect = target.RectangleToScreen(target.ClientRectangle);
+
+            // Full-screen region
+            Region region = new Region(new Rectangle(0, 0, Width, Height));
+
+            // Remove the target area from it
+            region.Exclude(targetRect);
+
+            this.Region = region;
+
+            Invalidate();
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            Rectangle r = target.RectangleToScreen(target.ClientRectangle);
+            var targetRect = target.RectangleToScreen(target.ClientRectangle);
 
-            using var brush = new SolidBrush(Color.FromArgb(180, Color.Black));
-            e.Graphics.FillRectangle(brush, this.ClientRectangle);
-
-            e.Graphics.FillRectangle(Brushes.Transparent, r);
-
-            e.Graphics.DrawString(
-                message,
-                new Font("Segoe UI", 14),
-                Brushes.White,
-                new PointF(r.Left, r.Bottom + 10)
-            );
+            using (var font = new Font("Segoe UI", 12))
+            using (var brush = new SolidBrush(Color.White))
+            {
+                e.Graphics.DrawString(
+                    message,
+                    font,
+                    brush,
+                    targetRect.Left,
+                    targetRect.Bottom + 8
+                );
+            }
         }
     }
-
 }
