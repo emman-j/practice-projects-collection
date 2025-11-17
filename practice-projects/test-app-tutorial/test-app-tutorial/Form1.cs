@@ -20,5 +20,11 @@ namespace test_app_tutorial
         {
             tutorial.Start();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using(Form1 f = new Form1()) 
+                f.ShowDialog(this);
+        }
     }
 }

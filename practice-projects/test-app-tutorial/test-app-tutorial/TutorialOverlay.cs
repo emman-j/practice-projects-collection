@@ -34,7 +34,7 @@ namespace test_app_tutorial
             BackColor = Color.Black;
             Opacity = 0.65;
 
-            Click += (s, e) => ProceedNext();
+            //Click += (s, e) => ProceedNext();
             Shown += (s, e) => CreateMask();
 
             // NEXT BUTTON
@@ -74,18 +74,13 @@ namespace test_app_tutorial
             Close();
             prevStep?.Invoke();
         }
+        private Rectangle targetRect;
 
         private void CreateMask()
         {
-            var screenRect = Screen.FromControl(target).Bounds;
-            var targetRect = target.RectangleToScreen(target.ClientRectangle);
-
-            Region region = new Region(new Rectangle(0, 0, Width, Height));
-            region.Exclude(targetRect);
-            this.Region = region;
-
+            targetRect = target.RectangleToScreen(target.ClientRectangle);
+            Invalidate(); // redraw
             PositionButtons(targetRect);
-            Invalidate();
         }
 
         private void PositionButtons(Rectangle targetRect)
@@ -101,23 +96,36 @@ namespace test_app_tutorial
             btnPrev.BringToFront();
             btnNext.BringToFront();
         }
-
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            var targetRect = target.RectangleToScreen(target.ClientRectangle);
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            using (var font = new Font("Segoe UI", 12))
+            // 1. Draw full semi-transparent overlay
+            using (Brush dimBrush = new SolidBrush(Color.FromArgb(160, Color.Black)))
+                g.FillRectangle(dimBrush, this.ClientRectangle);
+
+            // 2. Draw highlight rectangle (border, glow, or semi-transparent fill)
+            using (Pen highlightPen = new Pen(Color.Yellow, 3))
+            {
+                g.DrawRectangle(highlightPen, targetRect);
+            }
+
+            using (Brush highlightFill = new SolidBrush(Color.FromArgb(50, Color.Yellow)))
+            {
+                g.FillRectangle(highlightFill, targetRect);
+            }
+
+            // 3. Draw message below highlight
+            using (var font = new Font("Segoe UI", 11))
             using (var brush = new SolidBrush(Color.White))
             {
-                e.Graphics.DrawString(
-                    message,
-                    font,
-                    brush,
-                    new PointF(targetRect.Left, targetRect.Bottom + 8)
-                );
+                g.DrawString(message, font, brush, targetRect.Left, targetRect.Bottom + 8);
             }
         }
+
+
     }
 }
