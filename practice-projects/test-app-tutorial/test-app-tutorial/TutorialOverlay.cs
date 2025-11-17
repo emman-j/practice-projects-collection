@@ -16,6 +16,7 @@ namespace test_app_tutorial
 
         private readonly Button btnNext;
         private readonly Button btnPrev;
+        private Rectangle targetRect;
 
         public TutorialOverlay(Control targetControl, string tutorialMessage, Action onNext, Action onPrevious)
         {
@@ -74,16 +75,15 @@ namespace test_app_tutorial
             Close();
             prevStep?.Invoke();
         }
-        private Rectangle targetRect;
 
         private void CreateMask()
         {
             targetRect = target.RectangleToScreen(target.ClientRectangle);
             Invalidate(); // redraw
-            PositionButtons(targetRect);
+            PositionButtons();
         }
 
-        private void PositionButtons(Rectangle targetRect)
+        private void PositionButtons()
         {
             int centerX = (targetRect.Left + targetRect.Right) / 2;
 
