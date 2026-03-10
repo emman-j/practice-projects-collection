@@ -46,5 +46,30 @@ namespace modbus_crc_lookuptable
             }
             return crc;
         }
+        public static byte[] CalculateCRCByte(byte[] data)
+        {
+            ushort crc = CalculateCRC(data);
+
+            byte lowByte = (byte)(crc & 0xFF); 
+            byte highByte = (byte)((crc >> 8) & 0xFF); 
+            return new byte[] { highByte, lowByte };  
+        }
+
+        // Swap the CRC bytes (Modbus format is low byte first)
+        public static byte[] SwapCRCBytes(ushort crc)
+        {
+            byte highByte = (byte)(crc >> 8);  // Extract high byte
+            byte lowByte = (byte)(crc & 0xFF); // Extract low byte
+
+            return new byte[] { lowByte, highByte };  // Return as low byte first, then high byte
+        }
+        public static byte[] SwapCRCBytes(byte[] data)
+        {
+            byte highByte = data[0]; 
+            byte lowByte = data[1];
+
+            return new byte[] { lowByte, highByte };
+        }
+
     }
 }
